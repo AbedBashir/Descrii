@@ -2,7 +2,10 @@
 
 client_id = "ebed74bb01dac3c2609c9cc1fe2c88b2"
 name = "Descrii"
-application_url = "https://example.com"
+application_url = "https://descrii-production.up.railway.app"
+
+[auth]
+redirect_urls = [ "https://descrii-production.up.railway.app/auth/callback" ]
 embedded = true
 
 [access_scopes]
