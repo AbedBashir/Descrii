@@ -3,10 +3,11 @@
 client_id = "ebed74bb01dac3c2609c9cc1fe2c88b2"
 name = "Descrii"
 application_url = "https://descrii-production.up.railway.app"
+embedded = true
+
 
 [auth]
 redirect_urls = [ "https://descrii-production.up.railway.app/auth/callback" ]
-embedded = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
