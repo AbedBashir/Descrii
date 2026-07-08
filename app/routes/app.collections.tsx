@@ -1,5 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import type { ActionFunctionArgs, HeadersFunction, LoaderFunctionArgs } from "react-router";
+import type {
+  ActionFunctionArgs,
+  HeadersFunction,
+  LoaderFunctionArgs,
+} from "react-router";
 import { useFetcher } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { boundary } from "@shopify/shopify-app-react-router/server";
@@ -31,7 +35,9 @@ export default function Collections() {
     if (fetcher.data?.pushed && fetcher.state === "idle") {
       if (lastHandledKey.current !== fetcher.data.collectionId) {
         lastHandledKey.current = fetcher.data.collectionId;
-        shopify.toast.show(`"${fetcher.data.collectionName}" updated`, { duration: 4000 });
+        shopify.toast.show(`"${fetcher.data.collectionName}" updated`, {
+          duration: 4000,
+        });
         setSelectedCollection(null);
         setExtraInfo("");
       }
@@ -39,12 +45,18 @@ export default function Collections() {
   }, [fetcher.data, fetcher.state, shopify]);
 
   const handlePickCollection = async () => {
-    const selected = await shopify.resourcePicker({ type: "collection", multiple: false });
+    const selected = await shopify.resourcePicker({
+      type: "collection",
+      multiple: false,
+    });
     if (selected?.length > 0) setSelectedCollection(selected[0]);
   };
 
   const handlePickBulkCollections = async () => {
-    const selected = await shopify.resourcePicker({ type: "collection", multiple: true });
+    const selected = await shopify.resourcePicker({
+      type: "collection",
+      multiple: true,
+    });
     if (selected?.length > 0) {
       setBulkCollections(selected);
       setBulkResults([]);
@@ -54,11 +66,14 @@ export default function Collections() {
 
   const handleGenerate = () => {
     if (!selectedCollection) return;
-    fetcher.submit({
-      collectionId: selectedCollection.id,
-      collectionName: selectedCollection.title,
-      extraInfo,
-    }, { method: "POST" });
+    fetcher.submit(
+      {
+        collectionId: selectedCollection.id,
+        collectionName: selectedCollection.title,
+        extraInfo,
+      },
+      { method: "POST" },
+    );
   };
 
   const runBulk = async () => {
@@ -80,7 +95,10 @@ export default function Collections() {
         });
 
         if (!res.ok) {
-          results.push({ collection: col.title, error: `Server error ${res.status}` });
+          results.push({
+            collection: col.title,
+            error: `Server error ${res.status}`,
+          });
           setBulkResults([...results]);
           continue;
         }
@@ -89,74 +107,189 @@ export default function Collections() {
         results.push({ collection: col.title, ...data });
         setBulkResults([...results]);
       } catch (e: any) {
-        results.push({ collection: col.title, error: e.message || "Request failed" });
+        results.push({
+          collection: col.title,
+          error: e.message || "Request failed",
+        });
         setBulkResults([...results]);
       }
     }
 
     setBulkLoading(false);
-    const successCount = results.filter(r => r.pushed).length;
-    shopify.toast.show(`${successCount} of ${results.length} collections updated`, { duration: 4000 });
+    const successCount = results.filter((r) => r.pushed).length;
+    shopify.toast.show(
+      `${successCount} of ${results.length} collections updated`,
+      { duration: 4000 },
+    );
   };
 
-  const progressPct = bulkCollections.length > 0 ? Math.round((bulkResults.length / bulkCollections.length) * 100) : 0;
+  const progressPct =
+    bulkCollections.length > 0
+      ? Math.round((bulkResults.length / bulkCollections.length) * 100)
+      : 0;
 
   return (
     <s-page heading="Collection Descriptions">
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
-
+      <div
+        style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}
+      >
         {/* LEFT — Single */}
-        <div style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: "12px", padding: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div
+          style={{
+            background: "var(--card-bg)",
+            border: "1px solid var(--card-border)",
+            borderRadius: "12px",
+            padding: "24px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+          }}
+        >
           <div>
-            <h2 style={{ margin: "0 0 4px", fontSize: "16px", fontWeight: "600", color: "var(--text-primary)" }}>Single collection</h2>
-            <p style={{ margin: 0, fontSize: "13px", color: "var(--text-secondary)" }}>Select a collection — AI will generate and push the description directly.</p>
+            <h2
+              style={{
+                margin: "0 0 4px",
+                fontSize: "16px",
+                fontWeight: "600",
+                color: "var(--text-primary)",
+              }}
+            >
+              Single collection
+            </h2>
+            <p
+              style={{
+                margin: 0,
+                fontSize: "13px",
+                color: "var(--text-secondary)",
+              }}
+            >
+              Select a collection — AI will generate and push the description
+              directly.
+            </p>
           </div>
 
-          <button onClick={handlePickCollection} style={{
-            padding: "10px 16px", borderRadius: "8px", border: "2px solid #008060",
-            background: selectedCollection ? "#008060" : "var(--card-bg)",
-            color: selectedCollection ? "white" : "#008060",
-            fontWeight: "600", fontSize: "14px", cursor: "pointer", transition: "all 0.2s",
-          }}>
-            {selectedCollection ? `✓ ${selectedCollection.title}` : "Select collection from store"}
+          <button
+            onClick={handlePickCollection}
+            style={{
+              padding: "10px 16px",
+              borderRadius: "8px",
+              border: "2px solid #008060",
+              background: selectedCollection ? "#008060" : "var(--card-bg)",
+              color: selectedCollection ? "white" : "#008060",
+              fontWeight: "600",
+              fontSize: "14px",
+              cursor: "pointer",
+              transition: "all 0.2s",
+            }}
+          >
+            {selectedCollection
+              ? `✓ ${selectedCollection.title}`
+              : "Select collection from store"}
           </button>
 
           {selectedCollection && (
             <>
               <div>
-                <label style={{ fontSize: "13px", fontWeight: "600", color: "var(--text-primary)", display: "block", marginBottom: "6px" }}>Extra info (optional)</label>
+                <label
+                  style={{
+                    fontSize: "13px",
+                    fontWeight: "600",
+                    color: "var(--text-primary)",
+                    display: "block",
+                    marginBottom: "6px",
+                  }}
+                >
+                  Extra info (optional)
+                </label>
                 <textarea
                   value={extraInfo}
                   onChange={(e) => setExtraInfo(e.target.value)}
                   placeholder="Season, target audience, theme, promotion..."
-                  style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid var(--card-border)", background: "var(--card-bg)", color: "var(--text-primary)", fontSize: "13px", fontFamily: "inherit", resize: "vertical", minHeight: "70px", boxSizing: "border-box" }}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    borderRadius: "8px",
+                    border: "1px solid var(--card-border)",
+                    background: "var(--card-bg)",
+                    color: "var(--text-primary)",
+                    fontSize: "13px",
+                    fontFamily: "inherit",
+                    resize: "vertical",
+                    minHeight: "70px",
+                    boxSizing: "border-box",
+                  }}
                 />
               </div>
 
-              <button onClick={handleGenerate} disabled={isLoading} style={{
-                padding: "14px", borderRadius: "8px", border: "none",
-                background: isLoading ? "var(--card-border)" : "#008060",
-                color: "white", fontWeight: "700", fontSize: "15px",
-                cursor: isLoading ? "not-allowed" : "pointer",
-              }}>
-                {isLoading ? "⏳ Generating & pushing..." : "✨ Generate & push to store"}
+              <button
+                onClick={handleGenerate}
+                disabled={isLoading}
+                style={{
+                  padding: "14px",
+                  borderRadius: "8px",
+                  border: "none",
+                  background: isLoading ? "var(--card-border)" : "#008060",
+                  color: "white",
+                  fontWeight: "700",
+                  fontSize: "15px",
+                  cursor: isLoading ? "not-allowed" : "pointer",
+                }}
+              >
+                {isLoading
+                  ? "⏳ Generating & pushing..."
+                  : "✨ Generate & push to store"}
               </button>
 
-              <button onClick={() => { setSelectedCollection(null); setExtraInfo(""); }} style={{
-                padding: "8px", borderRadius: "8px", border: "1px solid var(--card-border)", background: "var(--card-bg)", color: "var(--text-secondary)", fontSize: "13px", cursor: "pointer",
-              }}>Clear selection</button>
+              <button
+                onClick={() => {
+                  setSelectedCollection(null);
+                  setExtraInfo("");
+                }}
+                style={{
+                  padding: "8px",
+                  borderRadius: "8px",
+                  border: "1px solid var(--card-border)",
+                  background: "var(--card-bg)",
+                  color: "var(--text-secondary)",
+                  fontSize: "13px",
+                  cursor: "pointer",
+                }}
+              >
+                Clear selection
+              </button>
             </>
           )}
 
           {fetcher.data?.error && (
-            <div style={{ padding: "12px", background: "var(--danger-bg)", border: "1px solid var(--danger-border)", borderRadius: "8px", color: "var(--danger-text)", fontSize: "13px" }}>
-              <p style={{ margin: fetcher.data?.limitReached ? "0 0 10px" : 0 }}>{fetcher.data.error}</p>
+            <div
+              style={{
+                padding: "12px",
+                background: "var(--danger-bg)",
+                border: "1px solid var(--danger-border)",
+                borderRadius: "8px",
+                color: "var(--danger-text)",
+                fontSize: "13px",
+              }}
+            >
+              <p
+                style={{ margin: fetcher.data?.limitReached ? "0 0 10px" : 0 }}
+              >
+                {fetcher.data.error}
+              </p>
               {fetcher.data?.limitReached && (
-                <a href="/app/plan" style={{
-                  display: "inline-block", padding: "8px 16px", borderRadius: "6px",
-                  background: "#d72c0d", color: "white", fontSize: "13px", fontWeight: "600",
-                  textDecoration: "none",
-                }}>
+                <a
+                  href="/app/plan"
+                  style={{
+                    display: "inline-block",
+                    padding: "8px 16px",
+                    borderRadius: "6px",
+                    background: "#d72c0d",
+                    color: "white",
+                    fontSize: "13px",
+                    fontWeight: "600",
+                    textDecoration: "none",
+                  }}
+                >
                   Upgrade plan →
                 </a>
               )}
@@ -165,31 +298,103 @@ export default function Collections() {
         </div>
 
         {/* RIGHT — Bulk */}
-        <div style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: "12px", padding: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div
+          style={{
+            background: "var(--card-bg)",
+            border: "1px solid var(--card-border)",
+            borderRadius: "12px",
+            padding: "24px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "16px",
+          }}
+        >
           <div>
-            <h2 style={{ margin: "0 0 4px", fontSize: "16px", fontWeight: "600", color: "var(--text-primary)" }}>Bulk generation</h2>
-            <p style={{ margin: 0, fontSize: "13px", color: "var(--text-secondary)" }}>Select multiple collections — all descriptions pushed automatically.</p>
+            <h2
+              style={{
+                margin: "0 0 4px",
+                fontSize: "16px",
+                fontWeight: "600",
+                color: "var(--text-primary)",
+              }}
+            >
+              Bulk generation
+            </h2>
+            <p
+              style={{
+                margin: 0,
+                fontSize: "13px",
+                color: "var(--text-secondary)",
+              }}
+            >
+              Select multiple collections — all descriptions will be pushed
+              automatically.
+            </p>
           </div>
 
-          <button onClick={handlePickBulkCollections} style={{
-            padding: "10px 16px", borderRadius: "8px", border: "2px solid #5c6ac4",
-            background: bulkCollections.length > 0 ? "#5c6ac4" : "var(--card-bg)",
-            color: bulkCollections.length > 0 ? "white" : "#5c6ac4",
-            fontWeight: "600", fontSize: "14px", cursor: "pointer", transition: "all 0.2s",
-          }}>
-            {bulkCollections.length > 0 ? `✓ ${bulkCollections.length} collections selected` : "Select multiple collections"}
+          <button
+            onClick={handlePickBulkCollections}
+            style={{
+              padding: "10px 16px",
+              borderRadius: "8px",
+              border: "2px solid #5c6ac4",
+              background:
+                bulkCollections.length > 0 ? "#5c6ac4" : "var(--card-bg)",
+              color: bulkCollections.length > 0 ? "white" : "#5c6ac4",
+              fontWeight: "600",
+              fontSize: "14px",
+              cursor: "pointer",
+              transition: "all 0.2s",
+            }}
+          >
+            {bulkCollections.length > 0
+              ? `✓ ${bulkCollections.length} collections selected`
+              : "Select multiple collections"}
           </button>
 
           {bulkCollections.length > 0 && (
             <>
-              <div style={{ display: "flex", flexDirection: "column", gap: "6px", maxHeight: "240px", overflowY: "auto" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "6px",
+                  maxHeight: "240px",
+                  overflowY: "auto",
+                }}
+              >
                 {bulkCollections.map((c, i) => (
-                  <div key={i} style={{ padding: "8px 12px", background: "var(--surface-subdued)", borderRadius: "6px", fontSize: "13px", color: "var(--text-primary)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div
+                    key={i}
+                    style={{
+                      padding: "8px 12px",
+                      background: "var(--surface-subdued)",
+                      borderRadius: "6px",
+                      fontSize: "13px",
+                      color: "var(--text-primary)",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
                     <span>{c.title}</span>
                     <span>
-                      {bulkResults[i]?.pushed && <span style={{ color: "#008060" }}>✓ pushed</span>}
-                      {bulkResults[i]?.error && <span style={{ color: "var(--danger-text)" }} title={bulkResults[i].error}>✕ failed</span>}
-                      {bulkLoading && !bulkResults[i] && <span style={{ color: "var(--text-secondary)" }}>⏳</span>}
+                      {bulkResults[i]?.pushed && (
+                        <span style={{ color: "#008060" }}>✓ pushed</span>
+                      )}
+                      {bulkResults[i]?.error && (
+                        <span
+                          style={{ color: "var(--danger-text)" }}
+                          title={bulkResults[i].error}
+                        >
+                          ✕ failed
+                        </span>
+                      )}
+                      {bulkLoading && !bulkResults[i] && (
+                        <span style={{ color: "var(--text-secondary)" }}>
+                          ⏳
+                        </span>
+                      )}
                     </span>
                   </div>
                 ))}
@@ -197,55 +402,144 @@ export default function Collections() {
 
               {bulkLoading && (
                 <div>
-                  <div style={{ width: "100%", height: "8px", background: "var(--surface-subdued)", borderRadius: "4px", overflow: "hidden" }}>
-                    <div style={{
-                      width: `${progressPct}%`, height: "100%", background: "#5c6ac4",
-                      transition: "width 0.3s ease", borderRadius: "4px",
-                    }} />
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "8px",
+                      background: "var(--surface-subdued)",
+                      borderRadius: "4px",
+                      overflow: "hidden",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: `${progressPct}%`,
+                        height: "100%",
+                        background: "#5c6ac4",
+                        transition: "width 0.3s ease",
+                        borderRadius: "4px",
+                      }}
+                    />
                   </div>
-                  <p style={{ margin: "6px 0 0", fontSize: "12px", color: "var(--text-secondary)", textAlign: "center" }}>
-                    {bulkResults.length} of {bulkCollections.length} · {progressPct}%
+                  <p
+                    style={{
+                      margin: "6px 0 0",
+                      fontSize: "12px",
+                      color: "var(--text-secondary)",
+                      textAlign: "center",
+                    }}
+                  >
+                    {bulkResults.length} of {bulkCollections.length} ·{" "}
+                    {progressPct}%
                   </p>
                 </div>
               )}
 
-              {bulkResults.some(r => r.error) && (
-                <div style={{ padding: "10px", background: "var(--danger-bg)", border: "1px solid var(--danger-border)", borderRadius: "8px", fontSize: "12px", color: "var(--danger-text)" }}>
+              {bulkResults.some((r) => r.error) && (
+                <div
+                  style={{
+                    padding: "10px",
+                    background: "var(--danger-bg)",
+                    border: "1px solid var(--danger-border)",
+                    borderRadius: "8px",
+                    fontSize: "12px",
+                    color: "var(--danger-text)",
+                  }}
+                >
                   Some items failed. Hover over ✕ for details.
                 </div>
               )}
 
               {!bulkLoading && !confirmingBulk && (
                 <div style={{ display: "flex", gap: "8px" }}>
-                  <button onClick={() => setConfirmingBulk(true)} style={{
-                    flex: 1, padding: "14px", borderRadius: "8px", border: "none",
-                    background: "#5c6ac4", color: "white",
-                    fontWeight: "700", fontSize: "15px", cursor: "pointer",
-                  }}>
+                  <button
+                    onClick={() => setConfirmingBulk(true)}
+                    style={{
+                      flex: 1,
+                      padding: "14px",
+                      borderRadius: "8px",
+                      border: "none",
+                      background: "#5c6ac4",
+                      color: "white",
+                      fontWeight: "700",
+                      fontSize: "15px",
+                      cursor: "pointer",
+                    }}
+                  >
                     ✨ Generate & push all
                   </button>
-                  <button onClick={() => { setBulkCollections([]); setBulkResults([]); }} style={{
-                    padding: "14px", borderRadius: "8px", border: "1px solid var(--card-border)", background: "var(--card-bg)", color: "var(--text-secondary)", fontSize: "13px", cursor: "pointer",
-                  }}>Clear</button>
+                  <button
+                    onClick={() => {
+                      setBulkCollections([]);
+                      setBulkResults([]);
+                    }}
+                    style={{
+                      padding: "14px",
+                      borderRadius: "8px",
+                      border: "1px solid var(--card-border)",
+                      background: "var(--card-bg)",
+                      color: "var(--text-secondary)",
+                      fontSize: "13px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Clear
+                  </button>
                 </div>
               )}
 
               {confirmingBulk && (
-                <div style={{ padding: "14px", background: "var(--surface-subdued)", borderRadius: "8px", display: "flex", flexDirection: "column", gap: "10px" }}>
-                  <p style={{ margin: 0, fontSize: "13px", color: "var(--text-primary)", fontWeight: "600" }}>
-                    This will use {bulkCollections.length} generation{bulkCollections.length > 1 ? "s" : ""} from your monthly quota. Continue?
+                <div
+                  style={{
+                    padding: "14px",
+                    background: "var(--surface-subdued)",
+                    borderRadius: "8px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px",
+                  }}
+                >
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "13px",
+                      color: "var(--text-primary)",
+                      fontWeight: "600",
+                    }}
+                  >
+                    This will use {bulkCollections.length} generation
+                    {bulkCollections.length > 1 ? "s" : ""} from your monthly
+                    quota. Continue?
                   </p>
                   <div style={{ display: "flex", gap: "8px" }}>
-                    <button onClick={runBulk} style={{
-                      flex: 1, padding: "10px", borderRadius: "6px", border: "none",
-                      background: "#5c6ac4", color: "white", fontWeight: "700", fontSize: "13px", cursor: "pointer",
-                    }}>
+                    <button
+                      onClick={runBulk}
+                      style={{
+                        flex: 1,
+                        padding: "10px",
+                        borderRadius: "6px",
+                        border: "none",
+                        background: "#5c6ac4",
+                        color: "white",
+                        fontWeight: "700",
+                        fontSize: "13px",
+                        cursor: "pointer",
+                      }}
+                    >
                       Yes, continue
                     </button>
-                    <button onClick={() => setConfirmingBulk(false)} style={{
-                      padding: "10px 16px", borderRadius: "6px", border: "1px solid var(--card-border)",
-                      background: "var(--card-bg)", color: "var(--text-secondary)", fontSize: "13px", cursor: "pointer",
-                    }}>
+                    <button
+                      onClick={() => setConfirmingBulk(false)}
+                      style={{
+                        padding: "10px 16px",
+                        borderRadius: "6px",
+                        border: "1px solid var(--card-border)",
+                        background: "var(--card-bg)",
+                        color: "var(--text-secondary)",
+                        fontSize: "13px",
+                        cursor: "pointer",
+                      }}
+                    >
                       Cancel
                     </button>
                   </div>
@@ -267,9 +561,16 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   try {
     const settings = await getSettings(session.shop);
-    const language = settings.plan === "pro" ? languageName(settings.defaultLanguage) : "English";
+    const language =
+      settings.plan === "pro"
+        ? languageName(settings.defaultLanguage)
+        : "English";
 
-    const limitCheck = await checkLimit(session.shop, settings.plan, "collection");
+    const limitCheck = await checkLimit(
+      session.shop,
+      settings.plan,
+      "collection",
+    );
     if (!limitCheck.allowed) {
       return {
         error: `You've reached your monthly limit (${limitCheck.used}/${limitCheck.limit === Infinity ? "∞" : limitCheck.limit} collections). Upgrade your plan to continue.`,
@@ -287,13 +588,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       body: JSON.stringify({
         model: "claude-sonnet-4-6",
         max_tokens: 1000,
-        messages: [{
-          role: "user",
-          content: `You are an expert Shopify copywriter. Write everything in ${language}.${settings.brandVoice ? ` Match this brand voice: ${settings.brandVoice}` : ""} Return ONLY a valid JSON object, no extra text, no markdown.
+        messages: [
+          {
+            role: "user",
+            content: `You are an expert Shopify copywriter. Write everything in ${language}.${settings.brandVoice ? ` Match this brand voice: ${settings.brandVoice}` : ""} Return ONLY a valid JSON object, no extra text, no markdown.
 Collection: ${collectionName}
 Extra info: ${formData.get("extraInfo") || "none"}
 Return: {"title":"Collection title under 60 chars","shortDescription":"1-2 sentence hook under 100 chars","fullDescription":"150-200 word description as plain text","metaTitle":"meta title under 60 chars","metaDescription":"meta description under 160 chars"}`,
-        }],
+          },
+        ],
       }),
     });
 
@@ -310,12 +613,17 @@ Return: {"title":"Collection title under 60 chars","shortDescription":"1-2 sente
     const fullDescriptionHtml = `<p><strong>${generated.shortDescription}</strong></p><p>${generated.fullDescription}</p>`;
 
     const isPaid = settings.plan === "starter" || settings.plan === "pro";
-    const shouldUpdateTitle = isPaid ? settings.autoUpdateCollectionTitle : true;
+    const shouldUpdateTitle = isPaid
+      ? settings.autoUpdateCollectionTitle
+      : true;
 
     const input: any = {
       id: collectionId,
       descriptionHtml: fullDescriptionHtml,
-      seo: { title: generated.metaTitle, description: generated.metaDescription },
+      seo: {
+        title: generated.metaTitle,
+        description: generated.metaDescription,
+      },
     };
     if (shouldUpdateTitle) {
       input.title = generated.title;
@@ -329,7 +637,7 @@ Return: {"title":"Collection title under 60 chars","shortDescription":"1-2 sente
           userErrors { field message }
         }
       }`,
-      { variables: { input } }
+      { variables: { input } },
     );
 
     const shopifyJson = await shopifyResponse.json();
@@ -350,8 +658,11 @@ Return: {"title":"Collection title under 60 chars","shortDescription":"1-2 sente
     };
   } catch (e: any) {
     console.error("Action error:", e);
-    return { error: e.message || "Failed to generate or push. Please try again." };
+    return {
+      error: e.message || "Failed to generate or push. Please try again.",
+    };
   }
 };
 
-export const headers: HeadersFunction = (headersArgs) => boundary.headers(headersArgs);
+export const headers: HeadersFunction = (headersArgs) =>
+  boundary.headers(headersArgs);

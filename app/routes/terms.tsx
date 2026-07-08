@@ -13,7 +13,7 @@ export default function Terms() {
       </p>
 
       <p style={{ marginBottom: "24px" }}>
-        These Terms of Service ("Terms") govern your use of AI Descriptions Generator
+        These Terms of Service ("Terms") govern your use of Descrii
         ("the app"), provided by FUSIONS. By installing the app on your Shopify store,
         you agree to these Terms. If you don't agree, please don't install or use the app.
       </p>

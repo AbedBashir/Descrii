@@ -13,7 +13,7 @@ export default function Privacy() {
       </p>
 
       <p style={{ marginBottom: "24px" }}>
-        AI Descriptions Generator ("the app", "we", "us") is a Shopify app built by FUSIONS
+        Descrii ("the app", "we", "us") is a Shopify app built by FUSIONS
         that generates product, collection, and marketing copy using AI. This policy explains
         what information the app accesses, how it's used, and how it's protected.
       </p>
